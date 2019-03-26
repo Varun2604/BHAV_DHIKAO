@@ -1,3 +1,5 @@
+import os
+
 class Config:
     isDev = True
 
@@ -16,11 +18,12 @@ class DevConfig:
     }
     SCRAPING_DETAILS = {
         'url' : 'https://www.bseindia.com/markets/MarketInfo/BhavCopy.aspx',
+        'tag': 'a',
         'element_attributes' : {
             'id' : 'ContentPlaceHolder1_btnhylZip'
         }
     }
-    ARCHIVE_DIRECTORY = './bhav_copy_archives'
+    ARCHIVE_DIRECTORY = os.getcwd()+os.sep+'bhav_copy_archives'
 
 class GridConfig:
     REDIS_CONNECTION_DETAILS = {
@@ -30,8 +33,9 @@ class GridConfig:
     }
     SCRAPING_DETAILS = {
         'url' : 'https://www.bseindia.com/markets/MarketInfo/BhavCopy.aspx',
+        'tag': 'a',
         'element_attributes' : {
             'id' : 'ContentPlaceHolder1_btnhylZip'
         }
     }
-    ARCHIVE_DIRECTORY = './bhav_copy_archives'
+    ARCHIVE_DIRECTORY = os.getcwd()+os.sep+'bhav_copy_archives'

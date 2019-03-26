@@ -13,7 +13,7 @@ redis==3.2.1
 requests==2.18.4
 soupsieve==1.9
 tempora==1.14
-urllib3==1.22
+urllib3>=1.23
 virtualenv==16.4.0
 webencodings==0.5.1
 zc.lockfile==1.4
