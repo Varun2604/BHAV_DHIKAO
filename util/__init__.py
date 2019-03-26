@@ -1,10 +1,17 @@
 import csv
 import redis
+import json
 
-def populate_data(file_name):
+from config import Config
+config = Config.get_config()
+
+
+
+# file_name - name of file
+# date - date in the format - YYYY-MM-DD
+def populate_data(file_name, date):
     f = open(file_name+".CSV", "r")
     csv_reader = csv.DictReader(f)
-    redis_connection = ConnectionUtil.get_instance().get_redis_connection()
     for row in csv_reader:
         name = row['SC_NAME'].strip()
         obj = {
@@ -15,8 +22,11 @@ def populate_data(file_name):
             'low': row['LOW'].strip(),
             'close': row['CLOSE'].strip()
         }
-        redis_connection.hmset(name, obj)
-        redis_connection.rpush('ordered_list',name)
+        # ConnectionUtil.hm_set(name+':'+date, obj)
+        x = {}
+        x[name]=json.dumps(obj)
+        ConnectionUtil.hm_set(date, x)
+        ConnectionUtil.r_push('ordered_list'+':'+date,name)
 
 class ConnectionUtil:
     connection = None
@@ -24,7 +34,9 @@ class ConnectionUtil:
     @staticmethod
     def get_redis_connection():
         if ConnectionUtil.connection is None:
-            ConnectionUtil.connection = redis.Redis(host='localhost', port=6379, db=0)
+            ConnectionUtil.connection = redis.Redis(host=config.REDIS_CONNECTION_DETAILS['host'],
+                                                    port=config.REDIS_CONNECTION_DETAILS['port'],
+                                                    db=config.REDIS_CONNECTION_DETAILS['db'])
         return ConnectionUtil.connection
 
     @staticmethod
@@ -32,8 +44,8 @@ class ConnectionUtil:
         ConnectionUtil.get_redis_connection().hmset(hash, obj)
 
     @staticmethod
-    def hget_all(name):
-        obj = ConnectionUtil.get_redis_connection().hgetall(name)
+    def hget_all(hash):
+        obj = ConnectionUtil.get_redis_connection().hgetall(hash)
         if obj is None:
             return None
         response = {}
@@ -42,8 +54,16 @@ class ConnectionUtil:
         return response
 
     @staticmethod
+    def h_get(hash, key):
+        return ConnectionUtil.get_redis_connection().hget(hash, key)
+
+    @staticmethod
     def r_push(list_name, obj):
         ConnectionUtil.get_redis_connection().rpush(list_name, obj)
+
+    @staticmethod
+    def l_push(list_name, obj):
+        ConnectionUtil.get_redis_connection().lpush(list_name, obj)
         
     @staticmethod
     def l_range(list_name, start_index, count):
