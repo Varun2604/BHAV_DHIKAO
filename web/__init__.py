@@ -5,7 +5,7 @@ import json
 
 import cherrypy
 
-from util import RedisConnection
+from util import RedisUtil
 
 class BHAVCopy(object):
     @cherrypy.expose
@@ -19,15 +19,15 @@ class BHAVCopyService(object):
     @cherrypy.tools.accept(media='application/json')
     def GET(self, date, search_name='', start_index=0, count=0):
         if start_index is 0 and count is 0:
-            obj = RedisConnection.hget_all(search_name+':'+date)
+            obj = RedisUtil.hget_all(search_name + ':' + date)
             if obj is None:
                 return json.dumps({'error' : 'invalid search string'})
             return json.dumps(obj)
         else:
-            list = RedisConnection.l_range('ordered_list'+':'+date, start_index, count)
+            list = RedisUtil.l_range('ordered_list' + ':' + date, start_index, count)
             arr = []
             for name in list:
-                obj = RedisConnection.h_get(date, name)
+                obj = RedisUtil.h_get(date, name)
                 obj = json.load(obj)
                 arr.append(obj)
             return json.dumps(arr)
