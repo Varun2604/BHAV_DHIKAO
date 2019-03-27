@@ -19,6 +19,18 @@ class BHAVCopy(object):
     def index(self):
         return open('web/static/index.html')
 
+    @cherrypy.expose
+    def put(self, value):
+        RedisUtil.hm_set('test', {
+            'value' : value
+        })
+        return 'updates successfully'
+
+
+    @cherrypy.expose
+    def get(self):
+        return json.dumps(RedisUtil.hget_all('test'))
+
 
 @cherrypy.expose
 class BHAVCopyService(object):

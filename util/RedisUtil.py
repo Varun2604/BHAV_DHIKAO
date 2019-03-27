@@ -11,7 +11,9 @@ class RedisUtil:
         if RedisUtil.connection is None:
             RedisUtil.connection = redis.Redis(host=config.REDIS_CONNECTION_DETAILS['host'],
                                                     port=config.REDIS_CONNECTION_DETAILS['port'],
-                                                    db=config.REDIS_CONNECTION_DETAILS['db'])
+                                                    # db=config.REDIS_CONNECTION_DETAILS['db'],
+                                                    password=config.REDIS_CONNECTION_DETAILS['password']
+                                                )
         return RedisUtil.connection
 
     @staticmethod

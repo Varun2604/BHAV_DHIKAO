@@ -21,9 +21,10 @@ class Config:
 class DevConfig(Config):
     isDev = True
     REDIS_CONNECTION_DETAILS = {
-        'host' : 'localhost',
-        'port' : 6379,
-        'db' : 0
+        'host' : 'redis-14243.c61.us-east-1-3.ec2.cloud.redislabs.com',
+        'port' : 14243,
+        'db' : 'alpha-db',
+        'password' : 'ek6pm6EqhvAqjJRSLMP13bVj6EelqCp4'
     }
     # SCRAPING_DETAILS = {
     #     'url' : 'https://www.bseindia.com/markets/MarketInfo/BhavCopy.aspx',
@@ -37,9 +38,10 @@ class DevConfig(Config):
 
 class GridConfig:
     REDIS_CONNECTION_DETAILS = {
-        'host' : 'localhost',
-        'port' : 6379,
-        'db' : 0
+        'host' : 'redis-14243.c61.us-east-1-3.ec2.cloud.redislabs.com',
+        'port' : 14243,
+        'db' : 'alpha-db',
+        'password' : 'ek6pm6EqhvAqjJRSLMP13bVj6EelqCp4'
     }
     # SCRAPING_DETAILS = {
     #     'url' : 'https://www.bseindia.com/markets/MarketInfo/BhavCopy.aspx',
