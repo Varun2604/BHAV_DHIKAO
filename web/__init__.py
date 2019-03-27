@@ -81,4 +81,4 @@ if __name__ == '__main__':
     }
     webapp = BHAVCopy()
     webapp.generator = BHAVCopyService()
-    cherrypy.quickstart(webapp, '/api/')
+    cherrypy.quickstart(webapp, '/api/',config=conf)
