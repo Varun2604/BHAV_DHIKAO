@@ -41,6 +41,10 @@ class RedisUtil:
         RedisUtil.get_redis_connection().lpush(list_name, obj)
 
     @staticmethod
+    def keys(pattern='*'):
+        return RedisUtil.get_redis_connection().keys(pattern)
+
+    @staticmethod
     def l_range(list_name, start_index, count):
         list = RedisUtil.get_redis_connection().lrange(list_name, start_index, count)
         if list is None:

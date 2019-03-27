@@ -80,6 +80,7 @@ def scrape_content(content, tag, attributes):
 '''
 def populate_data(csv_file, date):
     csv_reader = csv.DictReader(csv_file)
+    names = []
     for row in csv_reader:
         name = row['SC_NAME'].strip()
         obj = {
@@ -92,3 +93,6 @@ def populate_data(csv_file, date):
         }
         val = {name: json.dumps(obj)}
         RedisUtil.hm_set(date.__str__(), val)
+        names.append(name)
+    if len(names) > 0 :
+        RedisUtil.r_push(date.__str__()+'_name_list', names)

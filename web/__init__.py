@@ -2,36 +2,61 @@ import os, os.path
 import random
 import string
 import json
+from datetime import date
+
+import sys
+# print(os.getcwd())
+sys.path.append(os.getcwd())
+# print(sys.path)
 
 import cherrypy
 
+import config
 from util import RedisUtil
 
 class BHAVCopy(object):
     @cherrypy.expose
     def index(self):
-        return open('static/index.html')
+        return open('web/static/index.html')
 
 
 @cherrypy.expose
 class BHAVCopyService(object):
 
     @cherrypy.tools.accept(media='application/json')
-    def GET(self, date, search_name='', start_index=0, count=0):
+    def GET(self, date, search_str='', start_index=0, count=0):
+
+        [dd, mm, yyyy] = date.split('-/\s')
+        _date = date(int(yyyy), int(mm), int(dd))
+
+        try:
+            resp = BHAVCopyService.get_data(_date, search_str, start_index, count)
+            return json.dumps(resp)
+        except InvalidServiceInput as inv_e:
+            return json.dumps({'message': inv_e.__str__()})
+        except Exception:
+            return json.dumps({'message': 'Unknown Error'})
+
+
+    @staticmethod
+    def get_data(_date, name, start_index, count):
         if start_index is 0 and count is 0:
-            obj = RedisUtil.hget_all(search_name + ':' + date)
-            if obj is None:
-                return json.dumps({'error' : 'invalid search string'})
-            return json.dumps(obj)
+            result = RedisUtil.h_get(_date.__str__(), name)
+            if result is None or result is '':
+                raise InvalidServiceInput('Invalid input - Search string or Date')
+            return json.loads(result)
         else:
-            list = RedisUtil.l_range('ordered_list' + ':' + date, start_index, count)
+            name_list = RedisUtil.l_range(_date.__str__()+'_name_list', start_index, count)
             arr = []
-            for name in list:
-                obj = RedisUtil.h_get(date, name)
+            for name in name_list:
+                obj = RedisUtil.h_get(_date.__str__(), name)
                 obj = json.load(obj)
                 arr.append(obj)
-            return json.dumps(arr)
+            return json
 
+
+class InvalidServiceInput(Exception):
+    pass
 
 
 if __name__ == '__main__':
