@@ -9,11 +9,7 @@ class RedisUtil:
     @staticmethod
     def get_redis_connection():
         if RedisUtil.connection is None:
-            RedisUtil.connection = redis.Redis(host=config.REDIS_CONNECTION_DETAILS['host'],
-                                                    port=config.REDIS_CONNECTION_DETAILS['port'],
-                                                    # db=config.REDIS_CONNECTION_DETAILS['db'],
-                                                    password=config.REDIS_CONNECTION_DETAILS['password']
-                                                )
+            RedisUtil.connection = redis.Redis(**config.REDIS_CONNECTION_DETAILS)
         return RedisUtil.connection
 
     @staticmethod
@@ -32,15 +28,23 @@ class RedisUtil:
 
     @staticmethod
     def h_get(hash, key):
-        return RedisUtil.get_redis_connection().hget(hash, key)
+        return RedisUtil.get_redis_connection().hget(hash, key).decode('utf-8')
 
     @staticmethod
-    def r_push(list_name, obj):
-        RedisUtil.get_redis_connection().rpush(list_name, obj)
+    def hm_get(hash, keys):
+        arr = RedisUtil.get_redis_connection().hmget(hash, keys)
+        ret = []
+        for b_str in arr:
+            ret.append(b_str.decode('utf-8'))
+        return ret
 
     @staticmethod
-    def l_push(list_name, obj):
-        RedisUtil.get_redis_connection().lpush(list_name, obj)
+    def r_push(list_name, list):
+        RedisUtil.get_redis_connection().rpush(list_name, *list)
+
+    @staticmethod
+    def l_push(list_name, list):
+        RedisUtil.get_redis_connection().lpush(list_name, *list)
 
     @staticmethod
     def keys(pattern='*'):

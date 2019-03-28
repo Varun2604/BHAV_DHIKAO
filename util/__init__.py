@@ -7,6 +7,10 @@ from datetime import date
 import csv
 import json
 
+import sys
+import os
+sys.path.append(os.getcwd())
+
 from config import Config
 from util.RedisUtil import RedisUtil
 from util.file_archive_util import archive_file
@@ -81,6 +85,7 @@ def scrape_content(content, tag, attributes):
 def populate_data(csv_file, date):
     csv_reader = csv.DictReader(csv_file)
     names = []
+    rows = {}
     for row in csv_reader:
         name = row['SC_NAME'].strip()
         obj = {
@@ -91,8 +96,14 @@ def populate_data(csv_file, date):
             'low': row['LOW'].strip(),
             'close': row['CLOSE'].strip()
         }
-        val = {name: json.dumps(obj)}
-        RedisUtil.hm_set(date.__str__(), val)
+        # val = {name: json.dumps(obj)}
+        # RedisUtil.hm_set(date.__str__(), val)
         names.append(name)
+        rows[name] = json.dumps(obj)
     if len(names) > 0 :
-        RedisUtil.r_push(date.__str__()+'_name_list', names)
+        RedisUtil.r_push(date.__str__()+'_name_list', *names)
+    if len(rows.keys()) > 0:
+        RedisUtil.hm_set(date.__str__(), rows)
+if __name__ == '__main__':
+    scrape_and_populate_data()
+
