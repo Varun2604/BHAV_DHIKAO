@@ -101,9 +101,10 @@ def populate_data(csv_file, date):
         names.append(name)
         rows[name] = json.dumps(obj)
     if len(names) > 0 :
-        RedisUtil.r_push(date.__str__()+'_name_list', *names)
+        RedisUtil.r_push(date.__str__()+'_name_list', *names)                   #push the list of names available for the date
     if len(rows.keys()) > 0:
-        RedisUtil.hm_set(date.__str__(), rows)
+        RedisUtil.hm_set(date.__str__(), rows)                                  #push the data
+    RedisUtil.r_push('available_dates',date.__str__())                          #push the date for which the data is stored
 if __name__ == '__main__':
     scrape_and_populate_data()
 

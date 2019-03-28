@@ -2,11 +2,150 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Bhav Dhikao</title>
+    <link rel="stylesheet" type="text/css"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/bhav_dhikao.css">
 </head>
 <body>
 
+<!-- handlebar scripts -->
 
-    Test content
+<!-- script to construct stock list rows -->
+<script id="table-rows" type="text/x-handlebars-template">
+    {{#if rows}}
+    {{#each rows as |row index|}}
+    <tr>
+        <th scope="col">{{index}}</th>
+        <td scope="col">{{row.name}}</td>
+        <td scope="col">{{row.open}}</td>
+        <td scope="col">{{row.high}}</td>
+        <td scope="col">{{row.low}}</td>
+        <td scope="col">{{row.close}}</td>
+    </tr>
+    {{/each}}
+    {{else}}
+    <tr>
+        <th scope="row">#</th>
+        <td colspan="5"><p class="lead text-center">No data available</p></td>
+    </tr>
+    {{/if}}
+</script>
+
+<!-- script to construct date-list -->
+<script id="date-list" type="text/x-handlebars-template">
+    <ul class="list-group">
+        <button type="button" class="list-group-item list-group-item-action" disabled>Available dates</button>
+        {{#each dates}}
+        <button type="button" class="list-group-item list-group-item-action selectable" value="{{this.value}}">
+            {{this.display_value}}
+        </button>
+        {{/each}}
+    </ul>
+</script>
+
+<div class="app container-fluid" style="margin: 5px;">
+
+    <div class="heading row">
+        <div class="col-md">
+            <div class="jumbotron ">
+                <h1 class="display-4 text-center">Bhav Dhikao</h1>
+                <p class="lead text-center">The most beautiful way to glance historic stocks stats easily.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row body">
+        <div class="col-md-4">
+            <!-- calander row-->
+            <div class="row date-list">
+                <div class="col-md-2"></div>
+                <div class="col-md-7">
+                    <div class="scrollable-div">
+                        <ul class="list-group">
+                            <button type="button" class="list-group-item list-group-item-action" disabled>Available
+                                dates
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action selectable"
+                                    value="{{this.value}}">ABCD
+                            </button>
+                        </ul>
+                    </div>
+                </div>
+                <!--<div class="col-md-2">-->
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="table-side-row">
+                <!-- search bar row -->
+                <div class="row">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-6">
+                        <div class="search-bar input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Search" aria-label="Search"
+                                   aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-success">Go</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- table row-->
+                <div class="row table-row">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Open</th>
+                            <th scope="col">High</th>
+                            <th scope="col">Low</th>
+                            <th scope="col">Close</th>
+                        </tr>
+                        </thead>
+                        <tbody class="table-body">
+                        <tr>
+                            <th scope="row">#</th>
+                            <td colspan="5"><p class="lead text-center">No data available</p></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- importing all js files -->
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.1/handlebars.min.js"></script>
+<script src="./static/bhav_dhikao.js"></script>
 </body>
 </html>

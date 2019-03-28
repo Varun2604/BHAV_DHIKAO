@@ -28,7 +28,10 @@ class RedisUtil:
 
     @staticmethod
     def h_get(hash, key):
-        return RedisUtil.get_redis_connection().hget(hash, key).decode('utf-8')
+        value = RedisUtil.get_redis_connection().hget(hash, key)
+        if value is None:
+            return ''
+        return value.decode('utf-8')
 
     @staticmethod
     def hm_get(hash, keys):
@@ -53,8 +56,8 @@ class RedisUtil:
     @staticmethod
     def l_range(list_name, start_index, count):
         list = RedisUtil.get_redis_connection().lrange(list_name, start_index, count)
-        if list is None:
-            return None
+        if list is None or len(list) is 0:
+            return []
         response_list = []
         for item in list:
             response_list.append(item.decode('utf-8'))

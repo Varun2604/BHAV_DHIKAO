@@ -1,0 +1,20 @@
+.app {
+    margin: 5px;
+    padding: 15px;
+}
+
+.app .body .table-side-row {
+    margin-right: 15px;
+}
+
+.body .row.date-list {
+    margin-top: 50px;
+}
+
+.date-list .scrollable-div .list-group {
+     margin-top: 5px;
+    max-height: 300px;
+    margin-bottom: 10px;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
