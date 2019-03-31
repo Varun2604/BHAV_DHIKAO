@@ -4,7 +4,21 @@ const TEMPLATES = {
 };
 
 (function () {
-    function loadDataFor(date, search_str, regex_search) {
+
+    function deActivateButton(_class) {
+        var ele = document.querySelector('.search-bar .' + _class);
+        ele.disabled = true;
+        ele.innerText = "Loading.."
+    }
+
+    function activateButton(_class) {
+        var ele = document.querySelector('.search-bar .' + _class);
+        ele.disabled = false;
+        ele.innerText = ele.getAttribute('inner-text');
+    }
+
+
+    function loadDataFor(date, search_str, regex_search, cbk, cbkprm) {
         var query_params = {};
         if (search_str) {
             query_params = {
@@ -20,8 +34,15 @@ const TEMPLATES = {
         }
         get_ajax('data', query_params).done(function (data) {
             document.querySelector('.table-row .table-body').innerHTML = TEMPLATES.table_rows({rows: JSON.parse(data)});
+            document.querySelector('.search-bar input').value = '';
+            if (cbk) {
+                cbk(cbkprm, true);
+            }
         }).fail(function (jqXHR, textStatus, errorThrown) {
             document.querySelector('.table-row .table-body').innerHTML = TEMPLATES.table_rows({rows: []});
+            if (cbk) {
+                cbk(cbkprm, false);
+            }
         });
     }
 
@@ -36,7 +57,7 @@ const TEMPLATES = {
 
         var dates = [];
         for (var date of JSON.parse(data)) {
-            var [dd,mm,yyyy] = date.split('-');
+            var [dd, mm, yyyy] = date.split('-');
             var d = new Date(dd, mm, yyyy);
             dates.push({
                 value: date,
@@ -63,11 +84,16 @@ const TEMPLATES = {
 
     //set event to the search element
     document.querySelector('.search-bar .search').onclick = function (event) {
-        loadDataFor(document.querySelector('.date-list .scrollable-div .selectable-date.active').value, document.querySelector('.search-bar input').value, false);
+        deActivateButton('search');
+        loadDataFor(document.querySelector('.date-list .scrollable-div .selectable-date.active').value, document.querySelector('.search-bar input').value, false, activateButton, 'search');
     };
     document.querySelector('.search-bar .regex-search').onclick = function (event) {
-        loadDataFor(document.querySelector('.date-list .scrollable-div .selectable-date.active').value, document.querySelector('.search-bar input').value, true);
+        deActivateButton('regex-search');
+        loadDataFor(document.querySelector('.date-list .scrollable-div .selectable-date.active').value, document.querySelector('.search-bar input').value, true, activateButton, 'regex-search');
     };
+    $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
 })();
 
 function get_ajax(entity, data) {

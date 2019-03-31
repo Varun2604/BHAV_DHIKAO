@@ -42,11 +42,11 @@ class RedisUtil:
         return ret
 
     @staticmethod
-    def h_scan(list_name, search_string, search_till_end=False, total_count=10):
+    def h_scan(list_name, search_string, total_count=1):
         response = {}
         search = True
         cursor = 0
-
+        search_string = '*'+search_string+'*'
         while search:
             res = RedisUtil.get_redis_connection().hscan(list_name, match=search_string, cursor=cursor, count=10)
             cursor = res[0]
@@ -56,7 +56,7 @@ class RedisUtil:
                     response[key.decode('utf-8')] = objs[key].decode('utf-8')
                     if len(response) == total_count:
                         break
-                search = not ( total_count >= len(response) ) and search_till_end
+                search = not ( total_count <= len(response) )
             if cursor is 0:
                 search = False
 

@@ -62,13 +62,16 @@ class BhavData(object):
         if not RedisUtil.s_ismember('available_dates_set', _date.__str__()):
             raise InvalidInput('Invalid input Date')
         if start_index is 0 and count is 0:
-            if regex_search:
-                values = RedisUtil.h_scan(_date.__str__(), search_str, True)              #TODO check if searching through the name list will be faster than search the values
+            if regex_search == 'true' or regex_search == True:
+                values = RedisUtil.h_scan(_date.__str__(), search_str.upper(), 10)              #TODO check if searching through the name list will be faster than search the values
                 result = []
                 for key in values:
                     result.append(json.loads(values[key]))
             else:
-                result = [json.loads(RedisUtil.h_get(_date.__str__(), search_str))]
+                res = RedisUtil.h_get(_date.__str__(), search_str.upper())
+                if res is None or res == '':
+                    return res
+                result = [json.loads(res)]
             return result
         else:
             name_list = RedisUtil.l_range(_date.__str__()+'_name_list', int(start_index), int(count)-1)
