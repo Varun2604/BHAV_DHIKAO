@@ -4,47 +4,42 @@ import re
 from datetime import date as Date
 
 import sys
+
 sys.path.append(os.getcwd())
 
 import cherrypy
 
 from util import RedisUtil
 
+
 class BHAVCopy(object):
     @cherrypy.expose
     def index(self):
         return open('web/static/index.html')
 
-class Api(object):
 
+class Api(object):
     def __init__(self):
         self.bhav_data = BhavData()
         self.available_dates = AvailableDates()
 
     def _cp_dispatch(self, vpath):
-        try:
-            if len(vpath) > 0:
-                entity_name = vpath.pop()
-                if entity_name == 'data':
-                    return self.bhav_data
-                elif entity_name == 'available_dates':
-                    return self.available_dates
-        except BaseException as e:
-            print(e.with_traceback(sys.exc_info()[1]))
-
-    @cherrypy.expose
-    def index(self, name):
-        return 'About %s...' % name
-
+        if len(vpath) > 0:
+            entity_name = vpath.pop()
+            if entity_name == 'data':
+                return self.bhav_data
+            elif entity_name == 'available_dates':
+                return self.available_dates
 
 
 @cherrypy.expose
 class BhavData(object):
-
     @cherrypy.tools.accept(media='application/json')
+    @cherrypy.tools.json_out()
     def GET(self, date=Date.today().__str__(), search_str='', start_index=0, count=0, regex_search=False):
 
-        [yyyy, mm, dd] = re.compile('-|\/|\s').split(date)          #TODO dont fuss on date format, get universal datetime as input
+        [yyyy, mm, dd] = re.compile('-|\/|\s').split(
+            date)  # TODO dont fuss on date format, get universal datetime as input
         _date = Date(int(yyyy), int(mm), int(dd))
 
         try:
@@ -56,14 +51,14 @@ class BhavData(object):
             print(e.with_traceback(sys.exc_info()[1]))
             raise cherrypy.HTTPError(404, json.dumps({'message': 'Unknown Error'}))
 
-
     @staticmethod
     def get_data(_date, search_str, start_index, count, regex_search=False):
         if not RedisUtil.s_ismember('available_dates_set', _date.__str__()):
             raise InvalidInput('Invalid input Date')
         if start_index is 0 and count is 0:
             if regex_search == 'true' or regex_search == True:
-                values = RedisUtil.h_scan(_date.__str__(), search_str.upper(), 10)              #TODO check if searching through the name list will be faster than search the values
+                values = RedisUtil.h_scan(_date.__str__(), search_str.upper(),
+                                          10)  # TODO check if searching through the name list will be faster than search the values
                 result = []
                 for key in values:
                     result.append(json.loads(values[key]))
@@ -74,19 +69,21 @@ class BhavData(object):
                 result = [json.loads(res)]
             return result
         else:
-            name_list = RedisUtil.l_range(_date.__str__()+'_name_list', int(start_index), int(count)-1)
+            name_list = RedisUtil.l_range(_date.__str__() + '_name_list', int(start_index), int(count) - 1)
             values = RedisUtil.hm_get(_date.__str__(), name_list)
             arr = []
             for value in values:
                 arr.append(json.loads(value))
             return arr
 
+
 @cherrypy.expose
 class AvailableDates(object):
     @cherrypy.tools.accept(media='application/json')
+    # @cherrypy.tools.json_out()
     def GET(self):
         try:
-            dates_list = RedisUtil.l_range('available_dates', 0, -1)                # fetch all dates available
+            dates_list = RedisUtil.l_range('available_dates', 0, -1)  # fetch all dates available
             print(dates_list)
             return json.dumps(dates_list)
         except InvalidInput as inv_e:
@@ -115,6 +112,10 @@ if __name__ == '__main__':
             'tools.staticdir.on': True,
             'tools.staticdir.dir': './web/static'
         },
+        '/favicon.ico': {
+            'tools.staticfile.on': True,
+            'tools.staticfile.filename': './web/static/assets/favicon.ico'
+        },
         'global': {
             'server.socket_host': '0.0.0.0',
             'server.socket_port': int(os.environ.get('PORT', 5000)),
@@ -122,10 +123,4 @@ if __name__ == '__main__':
     }
     webapp = BHAVCopy()
     webapp.api = Api()
-    # webapp.api = {
-    #     'bhav' : BhavData(),
-    #     'available_dates' : AvailableDates()
-    # }
-    # webapp.api.bhav = BhavData()
-    # webapp.api.available_dates = AvailableDates()
-    cherrypy.quickstart(webapp, '/',config=conf)
+    cherrypy.quickstart(webapp, '/', config=conf)

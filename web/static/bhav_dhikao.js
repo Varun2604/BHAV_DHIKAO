@@ -57,8 +57,8 @@ const TEMPLATES = {
 
         var dates = [];
         for (var date of JSON.parse(data)) {
-            var [dd, mm, yyyy] = date.split('-');
-            var d = new Date(dd, mm, yyyy);
+            var [yyyy, mm, dd] = date.split('-');
+            var d = new Date(yyyy, (mm-1), dd);             //month is 0 index based
             dates.push({
                 value: date,
                 display_value: d.toDateString()
