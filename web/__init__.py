@@ -36,6 +36,7 @@ class BHAVCopy(object):
         return 'success'
 
 
+#TODO ensure that errors are handled properly
 class Api(object):
     def __init__(self):
         self.bhav_data = BhavData()

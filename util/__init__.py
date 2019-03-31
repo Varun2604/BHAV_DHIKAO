@@ -20,30 +20,31 @@ conf = Config.get_config()
 '''
     Method scrapes the bhav copy data from BSE's website, and populates the required data in redis
 '''
+#TODO remove data older than 1 month.
 def scrape_and_populate_data():
     file_bytes = None
     csv_file = None
     try:
         web_page_resp = do_get(conf.SCRAPING_DETAILS['url'])            # fetching the web page
-        print('page fetched')
+        # print('page fetched')
 
         ele = scrape_content(web_page_resp.content,
                              conf.SCRAPING_DETAILS['tag'],
                              conf.SCRAPING_DETAILS['element_attributes'])
-        print(ele)
+        # print(ele)
 
         [dd, mm, yyyy] = ele.contents[0].split(' ')[2].split('/')
 
         file_resp = do_get(ele['href'])                                 # fetching the zip content
 
-        print('file fetched')
+        # print('file fetched')
         zip_bytes = BytesIO(file_resp.content)
 
         zip = ZipFile(zip_bytes, 'r')
         file_name = zip.namelist()[0]                                   # file_name is the bhav_copy file
         csv_content = zip.read(file_name)                                   # read the contents of the csv file
         file_bytes = BytesIO(csv_content)
-        print('zip contents read')
+        # print('zip contents read')
 
         csv_file = TextIOWrapper(file_bytes)
         _date = date(int(yyyy), int(mm), int(dd))
