@@ -35,9 +35,8 @@
 <!-- script to construct date-list -->
 <script id="date-list" type="text/x-handlebars-template">
     <ul class="list-group">
-        <button type="button" class="list-group-item list-group-item-action" disabled>Available dates</button>
         {{#each dates}}
-        <button type="button" class="list-group-item list-group-item-action selectable" value="{{this.value}}">
+        <button type="button" class="list-group-item list-group-item-action selectable-date {{#if this.active}}active{{/if}}" value="{{this.value}}">
             {{this.display_value}}
         </button>
         {{/each}}
@@ -61,40 +60,16 @@
             <div class="row date-list">
                 <div class="col-md-2"></div>
                 <div class="col-md-7">
-                    <div class="scrollable-div">
-                        <ul class="list-group">
-                            <button type="button" class="list-group-item list-group-item-action" disabled>Available
-                                dates
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                            <button type="button" class="list-group-item list-group-item-action selectable"
-                                    value="{{this.value}}">ABCD
-                            </button>
-                        </ul>
-                    </div>
+                    <section>
+                        <h4>Available Dates</h4>
+                        <div class="scrollable-div">
+                            <ul class="list-group">
+                                <button type="button" class="list-group-item list-group-item-action" disabled>No Data
+                                    available
+                                </button>
+                            </ul>
+                        </div>
+                    </section>
                 </div>
                 <!--<div class="col-md-2">-->
             </div>
@@ -109,7 +84,8 @@
                             <input type="text" class="form-control" placeholder="Search" aria-label="Search"
                                    aria-describedby="basic-addon2">
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-success">Go</button>
+                                <button type="button" class="btn btn-success search">Search</button>
+                                <button type="button" class="btn btn-success regex-search">Regex Search</button>
                             </div>
                         </div>
                     </div>

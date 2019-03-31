@@ -42,13 +42,13 @@ class Api(object):
 class BhavData(object):
 
     @cherrypy.tools.accept(media='application/json')
-    def GET(self, date=Date.today().__str__(), name='', start_index=0, count=0):
+    def GET(self, date=Date.today().__str__(), search_str='', start_index=0, count=0, regex_search=False):
 
         [yyyy, mm, dd] = re.compile('-|\/|\s').split(date)          #TODO dont fuss on date format, get universal datetime as input
         _date = Date(int(yyyy), int(mm), int(dd))
 
         try:
-            resp = BhavData.get_data(_date, name, start_index, count)
+            resp = BhavData.get_data(_date, search_str, start_index, count, regex_search)
             return json.dumps(resp)
         except InvalidInput as inv_e:
             raise cherrypy.HTTPError(404, json.dumps({'message': inv_e.__str__()}))
@@ -58,14 +58,20 @@ class BhavData(object):
 
 
     @staticmethod
-    def get_data(_date, name, start_index, count):
+    def get_data(_date, search_str, start_index, count, regex_search=False):
+        if not RedisUtil.s_ismember('available_dates_set', _date.__str__()):
+            raise InvalidInput('Invalid input Date')
         if start_index is 0 and count is 0:
-            result = RedisUtil.h_get(_date.__str__(), name)
-            if result is None or result is '':
-                raise InvalidInput('Invalid input - Search string or Date')
-            return json.loads(result)
+            if regex_search:
+                values = RedisUtil.h_scan(_date.__str__(), search_str, True)              #TODO check if searching through the name list will be faster than search the values
+                result = []
+                for key in values:
+                    result.append(json.loads(values[key]))
+            else:
+                result = [json.loads(RedisUtil.h_get(_date.__str__(), search_str))]
+            return result
         else:
-            name_list = RedisUtil.l_range(_date.__str__()+'_name_list', start_index, count)
+            name_list = RedisUtil.l_range(_date.__str__()+'_name_list', int(start_index), int(count)-1)
             values = RedisUtil.hm_get(_date.__str__(), name_list)
             arr = []
             for value in values:
@@ -78,6 +84,7 @@ class AvailableDates(object):
     def GET(self):
         try:
             dates_list = RedisUtil.l_range('available_dates', 0, -1)                # fetch all dates available
+            print(dates_list)
             return json.dumps(dates_list)
         except InvalidInput as inv_e:
             return json.dumps({'message': inv_e.__str__()})
