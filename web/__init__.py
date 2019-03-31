@@ -9,9 +9,11 @@ sys.path.append(os.getcwd())
 
 import cherrypy
 
+import util
 from util import RedisUtil
+from config import Config
+conf_obj = Config.get_config()
 
-from datetime import date
 
 class BHAVCopy(object):
     @cherrypy.expose
@@ -19,8 +21,18 @@ class BHAVCopy(object):
         return open('web/static/index.html')
 
     @cherrypy.expose
-    def test(self):
-        RedisUtil.r_push('test', [date.today().__str__()])
+    #TODO remove the url once the scheduled task runs in heroku's process scheduler
+    def populate_data(self):
+        token = cherrypy.request.headers['Authorization']
+        if token is None or token == '':
+            raise cherrypy.HTTPError(401, json.dumps({'message': 'No Token found'}))
+        if not (token.split(' ')[1] == conf_obj.POPULATE_DATA_AUTH_TOKEN):
+            raise cherrypy.HTTPError(401, json.dumps({'message': 'Invalid Token'}))
+        try:
+            util.scrape_and_populate_data()
+        except BaseException as e:
+            print(e)
+            return 'failure'
         return 'success'
 
 
