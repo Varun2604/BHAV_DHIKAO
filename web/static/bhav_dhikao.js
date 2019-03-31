@@ -58,7 +58,7 @@ const TEMPLATES = {
         var dates = [];
         for (var date of JSON.parse(data)) {
             var [yyyy, mm, dd] = date.split('-');
-            var d = new Date(yyyy, (mm-1), dd);             //month is 0 index based
+            var d = new Date(yyyy, (mm - 1), dd);             //month is 0 index based
             dates.push({
                 value: date,
                 display_value: d.toDateString()
@@ -92,8 +92,8 @@ const TEMPLATES = {
         loadDataFor(document.querySelector('.date-list .scrollable-div .selectable-date.active').value, document.querySelector('.search-bar input').value, true, activateButton, 'regex-search');
     };
     $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 })();
 
 function get_ajax(entity, data) {

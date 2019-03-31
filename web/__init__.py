@@ -11,11 +11,17 @@ import cherrypy
 
 from util import RedisUtil
 
+from datetime import date
 
 class BHAVCopy(object):
     @cherrypy.expose
     def index(self):
         return open('web/static/index.html')
+
+    @cherrypy.expose
+    def test(self):
+        RedisUtil.r_push('test', [date.today().__str__()])
+        return 'success'
 
 
 class Api(object):
@@ -112,7 +118,7 @@ if __name__ == '__main__':
             'tools.staticdir.on': True,
             'tools.staticdir.dir': './web/static'
         },
-        '/favicon.ico': {
+        './web/static/assets/favicon.ico': {
             'tools.staticfile.on': True,
             'tools.staticfile.filename': './web/static/assets/favicon.ico'
         },
